@@ -1,0 +1,358 @@
+---
+title: "Problem Set 1"
+author: "Boyu Cao"
+date: 2020-09-22T21:13:14-05:00
+bibliography: "Reference.bib"
+categories: ["R"]
+tags: ["R Markdown", "plot", "regression"]
+---
+
+
+
+<div id="import-the-needed-library" class="section level1">
+<h1>Import the needed library</h1>
+<pre class="r"><code>library(opendatatoronto)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ stringr 1.4.0
+## ✓ tidyr   1.1.2     ✓ forcats 0.5.0
+## ✓ readr   1.3.1</code></pre>
+<pre><code>## ── Conflicts ─────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+</div>
+<div id="import-the-data-from-sourse" class="section level1">
+<h1>Import the data from sourse</h1>
+<pre class="r"><code># get package
+package &lt;- show_package(&quot;64b54586-6180-4485-83eb-81e8fae3b8fe&quot;)
+package</code></pre>
+<pre><code>## # A tibble: 1 x 10
+##   title id    topics civic_issues excerpt dataset_category num_resources formats
+##   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;                    &lt;int&gt; &lt;chr&gt;  
+## 1 COVI… 64b5… &lt;NA&gt;   &lt;NA&gt;         &lt;NA&gt;    &lt;NA&gt;                         1 &lt;NA&gt;   
+## # … with 2 more variables: refresh_rate &lt;chr&gt;, last_refreshed &lt;date&gt;</code></pre>
+<pre class="r"><code># get all resources for this package
+resources &lt;- list_package_resources(&quot;64b54586-6180-4485-83eb-81e8fae3b8fe&quot;)
+ 
+# identify datastore resources; by default, Toronto Open Data sets datastore resource format to CSV for non-geospatial and GeoJSON for geospatial resources
+datastore_resources &lt;- filter(resources, tolower(format) %in% c(&#39;csv&#39;, &#39;geojson&#39;))
+ 
+# load the first datastore resource as a sample
+covid_data &lt;- filter(datastore_resources, row_number()==1) %&gt;% get_resource()</code></pre>
+</div>
+<div id="show-data" class="section level1">
+<h1>Show data</h1>
+<pre class="r"><code>head(covid_data)</code></pre>
+<pre><code>## # A tibble: 6 x 18
+##    `_id` Assigned_ID `Outbreak Assoc… `Age Group` `Neighbourhood … FSA  
+##    &lt;int&gt;       &lt;int&gt; &lt;chr&gt;            &lt;chr&gt;       &lt;chr&gt;            &lt;chr&gt;
+## 1 143647           1 Sporadic         50 to 59 Y… Willowdale East  M2N  
+## 2 143648           2 Sporadic         50 to 59 Y… Willowdale East  M2N  
+## 3 143649           3 Sporadic         20 to 29 Y… Parkwoods-Donal… M3A  
+## 4 143650           4 Sporadic         60 to 69 Y… Church-Yonge Co… M4W  
+## 5 143651           5 Sporadic         60 to 69 Y… Church-Yonge Co… M4W  
+## 6 143652           6 Sporadic         50 to 59 Y… Newtonbrook West M2R  
+## # … with 12 more variables: `Source of Infection` &lt;chr&gt;, Classification &lt;chr&gt;,
+## #   `Episode Date` &lt;chr&gt;, `Reported Date` &lt;chr&gt;, `Client Gender` &lt;chr&gt;,
+## #   Outcome &lt;chr&gt;, `Currently Hospitalized` &lt;chr&gt;, `Currently in ICU` &lt;chr&gt;,
+## #   `Currently Intubated` &lt;chr&gt;, `Ever Hospitalized` &lt;chr&gt;, `Ever in
+## #   ICU` &lt;chr&gt;, `Ever Intubated` &lt;chr&gt;</code></pre>
+</div>
+<div id="data-features" class="section level1">
+<h1>Data features:</h1>
+<table class="table table-striped" id="table-features">
+<thead>
+<tr>
+<th scope="col">
+Column
+</th>
+<th scope="col">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+_id
+</td>
+<td>
+<p>
+Unique row identifier for Open Data database
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Assigned_ID
+</td>
+<td>
+<p>
+A unique ID assigned to cases by Toronto Public Health for the purposes of posting to Open Data, to allow for tracking of specific cases.
+</p>
+<p>
+Please note, cases may be reclassified or removed from posted datasets over time. This can occur due to duplicate resolution, or other ongoing data cleaning initiatives. In such instances, the Assigned ID of that case will no longer appear on the list and will not get assigned to another case.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Outbreak Associated
+</td>
+<td>
+<p>
+Outbreak associated cases are associated with outbreaks of COVID-19 in Toronto healthcare institutions and healthcare settings (e.g. long-term care homes, retirement homes, hospitals, etc.) and other Toronto congregate settings (such as homeless shelters).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Age Group
+</td>
+<td>
+<p>
+Age at time of illness. Age groups (in years): ≤19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90+, unknown (blank)
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Neighbourhood Name
+</td>
+<td>
+<p>
+Toronto is divided into 140 geographically distinct neighborhoods that were established to help government and community agencies with local planning by providing socio-economic data for a meaningful geographic area. Please note that client postal code information is mapped to the most up-to-date census tract (CT) and neighbourhood information available from the city. As a result, neighbourhood information is not available for those with missing postal code or when postal code could not be mapped/linked to a CT.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+FSA
+</td>
+<td>
+<p>
+Forward sortation area (i.e. first three characters of postal code) based on the case’s primary home address. FSA values are generated from client postal codes. One FSA can span multiple neighbourhoods.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Source of Infection
+</td>
+<td>
+<p>
+The most likely way that sporadic cases acquired their COVID-19 infection. Only the most likely exposure for each case is reported. Exposures that occurred up to 14 days before symptoms start are potential acquisition sources, and can include:
+</p>
+<ul>
+<li>
+<strong>Travel:</strong>Travel outside of Ontario.
+</li>
+<li>
+<strong>Close contact with a case:</strong> Was in close contact with a confirmed or probable COVID-19 case (e.g., reside in the same household).
+</li>
+<li>
+<strong>Institutional setting:</strong> Institutional settings includes, but not limited to: long-term care homes, acute care hospitals, complex case hospitals, special care facilities, retirement homes, rehabilitation hospitals.
+</li>
+<li>
+<strong>Healthcare setting:</strong> Healthcare settings includes, but not limited to: family physician, dentist, ophthalmologist, sports doctor.
+</li>
+<li>
+<strong>Community:</strong> Cases with no reported travel outside of Ontario, no known close contact with a COVID-19 case, and no reported infection acquired in an institutional or healthcare setting.
+</li>
+<li>
+<strong>Pending</strong> Information on source of infection pending.
+</li>
+<li>
+<strong>Unknown/missing</strong> Source of infection not identified or missing.
+</li>
+<li>
+<strong>N/A:</strong> Outbreak-associated cases.
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td>
+Classification
+</td>
+<td>
+<p>
+The application of the provincial case definition to categorize the cases as confirmed or probable, according to standard criteria. Please refer to the Ontario Ministry of Health website for Ontario’s <a href="http://www.health.gov.on.ca/en/pro/programs/publichealth/coronavirus/docs/2019_case_definition.pdf">current provincial case definitions.</a>
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Episode Date
+</td>
+<td>
+<p>
+The episode date is a derived variable that best estimates when the disease was acquired, and refers to the earliest available date from: symptom onset (the first day that COVID-19 symptoms occurred), laboratory specimen collection date, or reported date.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Reported Date
+</td>
+<td>
+<p>
+The date on which the case was reported to Toronto Public Health.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Client Gender
+</td>
+<td>
+<p>
+Self-reported gender. Gender is a system that operates in a social context and generally classifies people based on their assigned biological sex.
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Outcome
+</td>
+<td>
+<p>
+<strong>Fatal:</strong> Cases with a fatal outcome reported.
+</p>
+<p>
+<strong>Resolved:</strong> Cases not reported as deceased, and who are either:
+</p>
+<ul>
+<li>
+Reported as ‘recovered’ OR
+</li>
+<li>
+Where the report date is more than 14 days from symptom onset AND the case is not currently hospitalized.
+</li>
+</ul>
+<p>
+This number is underreported due to a lag in data entry.
+</p>
+<p>
+<strong>Active:</strong> All other cases
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Currently Hospitalized
+</td>
+<td>
+<p>
+Cases that are currently admitted to hospital (i.e., no discharge date reported).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Currently in ICU
+</td>
+<td>
+<p>
+Cases that are currently admitted to the intensive care unit (ICU) (i.e. no discharge date reported).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Currently Intubated
+</td>
+<td>
+<p>
+Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Ever Hospitalized
+</td>
+<td>
+<p>
+Cases that were hospitalized related to their COVID-19 infection (includes cases that are currently hospitalized and those that have been discharged or are deceased).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Ever in ICU
+</td>
+<td>
+<p>
+Cases that were admitted to the intensive care unit (ICU) related to their COVID-19 infection (includes cases that are currently in ICU and those that have been discharged or are deceased).
+</p>
+</td>
+</tr>
+<tr>
+<td>
+Ever Intubated
+</td>
+<td>
+<p>
+Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased)
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p><span class="citation">Wickham et al. (2019)</span></p>
+<pre class="r"><code>glimpse(covid_data)</code></pre>
+<pre><code>## Rows: 17,872
+## Columns: 18
+## $ `_id`                    &lt;int&gt; 143647, 143648, 143649, 143650, 143651, 1436…
+## $ Assigned_ID              &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1…
+## $ `Outbreak Associated`    &lt;chr&gt; &quot;Sporadic&quot;, &quot;Sporadic&quot;, &quot;Sporadic&quot;, &quot;Sporadi…
+## $ `Age Group`              &lt;chr&gt; &quot;50 to 59 Years&quot;, &quot;50 to 59 Years&quot;, &quot;20 to 2…
+## $ `Neighbourhood Name`     &lt;chr&gt; &quot;Willowdale East&quot;, &quot;Willowdale East&quot;, &quot;Parkw…
+## $ FSA                      &lt;chr&gt; &quot;M2N&quot;, &quot;M2N&quot;, &quot;M3A&quot;, &quot;M4W&quot;, &quot;M4W&quot;, &quot;M2R&quot;, &quot;M…
+## $ `Source of Infection`    &lt;chr&gt; &quot;Travel&quot;, &quot;Travel&quot;, &quot;Travel&quot;, &quot;Travel&quot;, &quot;Tra…
+## $ Classification           &lt;chr&gt; &quot;CONFIRMED&quot;, &quot;CONFIRMED&quot;, &quot;CONFIRMED&quot;, &quot;CONF…
+## $ `Episode Date`           &lt;chr&gt; &quot;2020-01-22&quot;, &quot;2020-01-21&quot;, &quot;2020-02-05&quot;, &quot;2…
+## $ `Reported Date`          &lt;chr&gt; &quot;2020-01-23&quot;, &quot;2020-01-23&quot;, &quot;2020-02-21&quot;, &quot;2…
+## $ `Client Gender`          &lt;chr&gt; &quot;FEMALE&quot;, &quot;MALE&quot;, &quot;FEMALE&quot;, &quot;FEMALE&quot;, &quot;MALE&quot;…
+## $ Outcome                  &lt;chr&gt; &quot;RESOLVED&quot;, &quot;RESOLVED&quot;, &quot;RESOLVED&quot;, &quot;RESOLVE…
+## $ `Currently Hospitalized` &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Currently in ICU`       &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Currently Intubated`    &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Ever Hospitalized`      &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;…
+## $ `Ever in ICU`            &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
+## $ `Ever Intubated`         &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…</code></pre>
+<p>#Show the graph</p>
+<pre class="r"><code>ggplot(data = covid_data, aes(x= `Age Group`, fill = Classification)) + 
+  geom_bar() +
+  coord_flip() + 
+  labs(title = &quot;Distribution of patients at different ages&quot;)</code></pre>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>From the graph we can see that patients are mainly concentrated in middle-aged and elderly people. As the patient gets older, it is easier to diagnose</p>
+<pre class="r"><code>ggplot(data = covid_data, aes(x = as.Date(`Episode Date`))) + geom_histogram(bins = 60) +
+  labs(x=&quot;Date&quot;,y=&quot;Count&quot;,title = &quot;Number of patients infected at different times&quot;)</code></pre>
+<p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>From the chart we can see the virus is seems like sensitive to the season.
+# Abstraction</p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+</div>
+<div id="reference" class="section level1 unnumbered">
+<h1>Reference</h1>
+<div id="refs" class="references">
+<div id="ref-citetidyverse">
+<p>Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019. “Welcome to the tidyverse.” <em>Journal of Open Source Software</em> 4 (43): 1686. <a href="https://doi.org/10.21105/joss.01686">https://doi.org/10.21105/joss.01686</a>.</p>
+</div>
+</div>
+</div>
