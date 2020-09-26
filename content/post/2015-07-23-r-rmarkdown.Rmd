@@ -116,4 +116,4 @@ From the chart we can see the virus is seems like sensitive to the season.
   3. The data in this spreadsheet are subject to change as public health investigations into reported cases and continuous quality improvement initiatives are ongoing, and additional cases continue to be reported. The data will be completely refreshed and overwritten on a weekly basis.The data are extracted at 3 PM on the Monday of a given week, and posted by Wednesday. Please note that these numbers may differ from those posted elsewhere, as data are extracted at different times, and from different sources. @covid
 
 # Reference
- 
+ Github: Xeon0312/STA304_PS1
