@@ -8,12 +8,15 @@
     <language>en-us</language>
     <lastBuildDate>Tue, 22 Sep 2020 21:13:14 -0500</lastBuildDate><atom:link href="/tags/plot/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Problem Set 1</title>
-      <link>/2020/09/22/problem-set-1/</link>
+      <title>COVID-19‘s characteristics analyze for making prevention plan</title>
+      <link>/2020/09/22/covid-19s-characteristics-analyze-for-making-prevention-plan/</link>
       <pubDate>Tue, 22 Sep 2020 21:13:14 -0500</pubDate>
       
-      <guid>/2020/09/22/problem-set-1/</guid>
-      <description>Import the needed library library(opendatatoronto) library(dplyr) ## ## Attaching package: &amp;#39;dplyr&amp;#39; ## The following objects are masked from &amp;#39;package:stats&amp;#39;: ## ## filter, lag ## The following objects are masked from &amp;#39;package:base&amp;#39;: ## ## intersect, setdiff, setequal, union library(tidyverse) ## ── Attaching packages ──────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.3.2 ✓ purrr 0.3.4 ## ✓ tibble 3.0.3 ✓ stringr 1.4.0 ## ✓ tidyr 1.1.2 ✓ forcats 0.5.0 ## ✓ readr 1.</description>
+      <guid>/2020/09/22/covid-19s-characteristics-analyze-for-making-prevention-plan/</guid>
+      <description>Author Boyu Cao
+ Date 2020-09-22
+ Abstract The COVID-19 epidemic has caused large-scale shutdowns around the world, severely affecting society and the economy. Therefore, we need to analyze the characteristics of COVID-19 to better formulate an epidemic prevention plan.
+ Introduction The outline of the paper is: (1)Using packages. (2)Import dataset. (3)Get a general overview of the dataset. (4)Select targeted variable. (5)Make graphs and analyze data. (6)Discussion about the graph.</description>
     </item>
     
   </channel>

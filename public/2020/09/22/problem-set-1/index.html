@@ -62,7 +62,7 @@
 
   <article class="article">
     
-    <span class="article-duration">7 min read</span>
+    <span class="article-duration">8 min read</span>
     
 
     <h1 class="article-title">Problem Set 1</h1>
@@ -75,8 +75,26 @@
       
 
 
-<div id="import-the-needed-library" class="section level1">
-<h1>Import the needed library</h1>
+<div id="authorship" class="section level1">
+<h1>Authorship</h1>
+<p>“Boyu Cao”</p>
+</div>
+<div id="abstract" class="section level1">
+<h1>Abstract</h1>
+<p>The COVID-19 epidemic has caused large-scale shutdowns around the world, severely affecting society and the economy. Therefore, we need to analyze the personality of COVID-19 to better formulate an epidemic prevention plan.</p>
+</div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The outline of the paper is:
+(1)Using packages.
+(2)Import dataset.
+(3)Get a general overview of the dataset.
+(4)Select targeted variable.
+(5)Make graphs and analyze data.
+(6)Discussion about the graph.
+(7)Weakness and future plan.</p>
+<div id="import-the-needed-library" class="section level2">
+<h2>Import the needed library</h2>
 <pre class="r"><code>library(opendatatoronto)
 library(dplyr)</code></pre>
 <pre><code>## 
@@ -97,8 +115,8 @@ library(dplyr)</code></pre>
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 </div>
-<div id="import-the-data-from-sourse" class="section level1">
-<h1>Import the data from sourse</h1>
+<div id="import-the-dataset-from-sourse" class="section level2">
+<h2>Import the dataset from sourse</h2>
 <pre class="r"><code># get package
 package &lt;- show_package(&quot;64b54586-6180-4485-83eb-81e8fae3b8fe&quot;)
 package</code></pre>
@@ -116,8 +134,8 @@ datastore_resources &lt;- filter(resources, tolower(format) %in% c(&#39;csv&#39;
 # load the first datastore resource as a sample
 covid_data &lt;- filter(datastore_resources, row_number()==1) %&gt;% get_resource()</code></pre>
 </div>
-<div id="show-data" class="section level1">
-<h1>Show data</h1>
+<div id="get-a-general-overview-of-the-dataset" class="section level2">
+<h2>Get a general overview of the dataset</h2>
 <pre class="r"><code>head(covid_data)</code></pre>
 <pre><code>## # A tibble: 6 x 18
 ##    `_id` Assigned_ID `Outbreak Assoc… `Age Group` `Neighbourhood … FSA  
@@ -134,8 +152,8 @@ covid_data &lt;- filter(datastore_resources, row_number()==1) %&gt;% get_resourc
 ## #   `Currently Intubated` &lt;chr&gt;, `Ever Hospitalized` &lt;chr&gt;, `Ever in
 ## #   ICU` &lt;chr&gt;, `Ever Intubated` &lt;chr&gt;</code></pre>
 </div>
-<div id="data-features" class="section level1">
-<h1>Data features:</h1>
+<div id="data-features" class="section level2">
+<h2>Data features:</h2>
 <table class="table table-striped" id="table-features">
 <thead>
 <tr>
@@ -398,21 +416,33 @@ Cases that were intubated related to their COVID-19 infection (includes cases th
 ## $ `Ever Hospitalized`      &lt;chr&gt; &quot;No&quot;, &quot;Yes&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;…
 ## $ `Ever in ICU`            &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…
 ## $ `Ever Intubated`         &lt;chr&gt; &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;No&quot;, &quot;N…</code></pre>
-<p>#Show the graph</p>
+</div>
+</div>
+<div id="target-variable" class="section level1">
+<h1>Target variable</h1>
+<p>We are mainly focus on ‘Age Group’ data and ‘Episode Date’. There two graphs will show the which of the group and when people easy to have the disease.</p>
+</div>
+<div id="show-the-graph" class="section level1">
+<h1>Show the graph</h1>
+<div id="graph1" class="section level2">
+<h2>Graph1</h2>
 <pre class="r"><code>ggplot(data = covid_data, aes(x= `Age Group`, fill = Classification)) + 
   geom_bar() +
   coord_flip() + 
   labs(title = &quot;Distribution of patients at different ages&quot;)</code></pre>
 <p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>From the graph we can see that patients are mainly concentrated in middle-aged and elderly people. As the patient gets older, it is easier to diagnose</p>
+<p>From the graph we can see that patients are mainly concentrated in middle-aged and elderly people. As the patient gets older, it is easier to diagnose.</p>
+</div>
+<div id="graph2" class="section level2">
+<h2>Graph2</h2>
 <pre class="r"><code>ggplot(data = covid_data, aes(x = as.Date(`Episode Date`))) + geom_histogram(bins = 60) +
   labs(x=&quot;Date&quot;,y=&quot;Count&quot;,title = &quot;Number of patients infected at different times&quot;)</code></pre>
 <p><img src="/post/2015-07-23-r-rmarkdown_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>From the chart we can see the virus is seems like sensitive to the season.
-# Abstraction</p>
+<p>From the chart we can see the virus is seems like sensitive to the season.</p>
 </div>
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
+</div>
+<div id="discussion" class="section level1">
+<h1>Discussion</h1>
 </div>
 <div id="reference" class="section level1 unnumbered">
 <h1>Reference</h1>

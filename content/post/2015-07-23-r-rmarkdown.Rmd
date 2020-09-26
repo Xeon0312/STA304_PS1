@@ -1,5 +1,5 @@
 ---
-title: "Problem Set 1"
+title: "COVID-19‘s characteristics analyze for making prevention plan"
 author: "Boyu Cao"
 date: 2020-09-22T21:13:14-05:00
 bibliography: "Reference.bib"
@@ -7,7 +7,27 @@ categories: ["R"]
 tags: ["R Markdown", "plot", "regression"]
 ---
 
-# Import the needed library
+# Author
+  Boyu Cao
+
+# Date 
+  2020-09-22
+  
+# Abstract
+  The COVID-19 epidemic has caused large-scale shutdowns around the world, severely affecting society and the economy. Therefore, we need to analyze the characteristics of COVID-19 to better formulate an epidemic prevention plan.
+
+# Introduction
+The outline of the paper is:
+  (1)Using packages.
+  (2)Import dataset. 
+  (3)Get a general overview of the dataset.
+  (4)Select targeted variable.
+  (5)Make graphs and analyze data.
+  (6)Discussion about the graph.
+  (7)Weakness and future plan.
+
+
+## Import the needed library
 ```{r}
 library(opendatatoronto)
 library(dplyr)
@@ -15,7 +35,7 @@ library(tidyverse)
 ```
 
 
-# Import the data from sourse
+## Import the dataset from sourse
 ```{r}
 # get package
 package <- show_package("64b54586-6180-4485-83eb-81e8fae3b8fe")
@@ -33,12 +53,13 @@ covid_data <- filter(datastore_resources, row_number()==1) %>% get_resource()
 ```
 
 
-# Show data
+## Get a general overview of the dataset
 ```{r}
 head(covid_data)
 ```
 
-# Data features:
+
+## Data features:
 
 <table class="table table-striped" id="table-features"><thead><tr><th scope="col">Column</th><th scope="col">Description</th></tr></thead><tbody><tr><td>_id</td><td><p>Unique row identifier for Open Data database</p></td></tr><tr><td>Assigned_ID</td><td><p>A unique ID assigned to cases by Toronto Public Health for the purposes of posting to Open Data, to allow for tracking of specific cases. </p>
 <p>Please note, cases may be reclassified or removed from posted datasets over time. This can occur due to duplicate resolution, or other ongoing data cleaning initiatives. In such instances, the Assigned ID of that case will no longer appear on the list and will not get assigned to another case.</p></td></tr><tr><td>Outbreak Associated</td><td><p>Outbreak associated cases are associated with outbreaks of COVID-19 in Toronto healthcare institutions and healthcare settings (e.g. long-term care homes, retirement homes, hospitals, etc.) and other Toronto congregate settings (such as homeless shelters).</p></td></tr><tr><td>Age Group</td><td><p>Age at time of illness. Age groups (in years): ≤19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90+, unknown (blank)</p></td></tr><tr><td>Neighbourhood Name</td><td><p>Toronto is divided into 140 geographically distinct neighborhoods that were established to help government and community agencies with local planning by providing socio-economic data for a meaningful geographic area. Please note that client postal code information is mapped to the most up-to-date census tract (CT) and neighbourhood information available from the city. As a result, neighbourhood information is not available for those with missing postal code or when postal code could not be mapped/linked to a CT. </p></td></tr><tr><td>FSA</td><td><p>Forward sortation area (i.e. first three characters of postal code) based on the case's primary home address. FSA values are generated from client postal codes. One FSA can span multiple neighbourhoods.</p></td></tr><tr><td>Source of Infection</td><td><p>The most likely way that sporadic cases acquired their COVID-19 infection. Only the most likely exposure for each case is reported. Exposures that occurred up to 14 days before symptoms start are potential acquisition sources, and can include:</p>
@@ -58,17 +79,17 @@ head(covid_data)
 <li>Where the report date is more than 14 days from symptom onset AND the case is not currently hospitalized.</li>
 </ul>
 <p>This number is underreported due to a lag in data entry.</p>
-<p><strong>Active:</strong> All other cases</p></td></tr><tr><td>Currently Hospitalized</td><td><p>Cases that are currently admitted to hospital (i.e., no discharge date reported).</p></td></tr><tr><td>Currently in ICU</td><td><p>Cases that are currently admitted to the intensive care unit (ICU) (i.e. no discharge date reported).</p></td></tr><tr><td>Currently Intubated</td><td><p>Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased).</p></td></tr><tr><td>Ever Hospitalized</td><td><p>Cases that were hospitalized related to their COVID-19 infection (includes cases that are currently hospitalized and those that have been discharged or are deceased). </p></td></tr><tr><td>Ever in ICU</td><td><p>Cases that were admitted to the intensive care unit (ICU) related to their COVID-19 infection (includes cases that are currently in ICU and those that have been discharged or are deceased).</p></td></tr><tr><td>Ever Intubated</td><td><p>Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased)</p></td></tr></tbody></table> @citetidyverse
-
-
-
+<p><strong>Active:</strong> All other cases</p></td></tr><tr><td>Currently Hospitalized</td><td><p>Cases that are currently admitted to hospital (i.e., no discharge date reported).</p></td></tr><tr><td>Currently in ICU</td><td><p>Cases that are currently admitted to the intensive care unit (ICU) (i.e. no discharge date reported).</p></td></tr><tr><td>Currently Intubated</td><td><p>Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased).</p></td></tr><tr><td>Ever Hospitalized</td><td><p>Cases that were hospitalized related to their COVID-19 infection (includes cases that are currently hospitalized and those that have been discharged or are deceased). </p></td></tr><tr><td>Ever in ICU</td><td><p>Cases that were admitted to the intensive care unit (ICU) related to their COVID-19 infection (includes cases that are currently in ICU and those that have been discharged or are deceased).</p></td></tr><tr><td>Ever Intubated</td><td><p>Cases that were intubated related to their COVID-19 infection (includes cases that are currently intubated and those that have been discharged or deceased)</p></td></tr></tbody></table> @covid
 
 ```{r}
 glimpse(covid_data)
 ```
+# Target variable
+We are mainly focus on 'Age Group' data and 'Episode Date'. There two graphs will show the which of the group and when people easy to have the disease.
 
+# Show the graph
 
-#Show the graph
+## Graph1
 ```{r}
 ggplot(data = covid_data, aes(x= `Age Group`, fill = Classification)) + 
   geom_bar() +
@@ -76,18 +97,23 @@ ggplot(data = covid_data, aes(x= `Age Group`, fill = Classification)) +
   labs(title = "Distribution of patients at different ages")
 ```
 
-From the graph we can see that patients are mainly concentrated in middle-aged and elderly people. As the patient gets older, it is easier to diagnose
+From the graph we can see that patients are mainly concentrated in middle-aged and elderly people. As the patient gets older, it is easier to diagnose.
 
-
+## Graph2
 ```{r}
 ggplot(data = covid_data, aes(x = as.Date(`Episode Date`))) + geom_histogram(bins = 60) +
   labs(x="Date",y="Count",title = "Number of patients infected at different times")
 ```
 
 From the chart we can see the virus is seems like sensitive to the season.
-# Abstraction
 
-# Introduction
+# Summary
+  As these two graph shown patients are mainly concentrated in middle-aged and elderly people, the patient gets older, it is easier to diagnose. That means we need to focus on protecting older. Also as the temputure going down the infectivity of the virus increases. We need to do our best to prevent the spread of the virus in autumn and winter. Wear musk and stay safe.
+  
+# Weekness
+  1. Any policy announced during the year will affect the second graph. We can't trust the count have the strongest relation, more variables are needed.
+  2. The deep thinking of the media of the COVID-19 to spard is needed.
+  3. The data in this spreadsheet are subject to change as public health investigations into reported cases and continuous quality improvement initiatives are ongoing, and additional cases continue to be reported. The data will be completely refreshed and overwritten on a weekly basis.The data are extracted at 3 PM on the Monday of a given week, and posted by Wednesday. Please note that these numbers may differ from those posted elsewhere, as data are extracted at different times, and from different sources. @covid
 
 # Reference
  
